@@ -2,6 +2,7 @@ var express  = require('express');
 var path  = require('path'); // модуль для парсинга пути
 var log  = require('./libs/log')(module);
 var app = express();
+
 app.use(express.favicon()); // отдаем стандартную фавиконку, можем здесь же свою задать
 app.use(express.logger('dev')); // выводим все запросы со статусами в консоль
 app.use(express.bodyParser()); // стандартный модуль, для парсинга JSON в запросах
@@ -11,26 +12,22 @@ app.use(express.static(path.join(__dirname, "public"))); // запуск ста�
 var config = require('./libs/config');
 
 app.listen(config.get('port'), function(){
-
     log.info('Express server listening on port ' + config.get('port'));
-
 });
 
 var log   = require('./libs/log')(module);
 var ArticleModel    = require('./libs/mongoose').ArticleModel;
 
 app.get('/api/articles', function(req, res) {
-
     return ArticleModel.find(function (err, articles) {
         if (!err) {
             return res.send(articles);
         } else {
             res.statusCode = 500;
-            log.error('Internal error(%d): %s',res.statusCode,err.message);
+            log.error('Internal error(%d): %s',  res.statusCode, err.message);
             return res.send({ error: 'Server error' });
         }
     });
-
 });
 
 app.post('/api/articles', function(req, res) {
@@ -44,7 +41,6 @@ app.post('/api/articles', function(req, res) {
     });
 
     article.save(function (err) {
-
         if (!err) {
             log.info("article created");
             return res.send({ status: 'OK', article:article });
@@ -57,14 +53,12 @@ app.post('/api/articles', function(req, res) {
                 res.statusCode = 500;
                 res.send({ error: 'Server error' });
             }
-            log.error('Internal error(%d): %s',res.statusCode,err.message);
+            log.error('Internal error(%d): %s', res.statusCode, err.message);
         }
     });
-
 });
 
 app.get('/api/articles/:id', function(req, res) {
-
     return ArticleModel.findById(req.params.id, function (err, article) {
         if(!article) {
             res.statusCode = 404;
@@ -74,21 +68,18 @@ app.get('/api/articles/:id', function(req, res) {
             return res.send({ status: 'OK', article:article });
         } else {
             res.statusCode = 500;
-            log.error('Internal error(%d): %s',res.statusCode,err.message);
+            log.error('Internal error(%d): %s', res.statusCode, err.message);
             return res.send({ error: 'Server error' });
         }
     });
-
 });
 
 app.put('/api/articles/:id', function (req, res){
-
     return ArticleModel.findById(req.params.id, function (err, article) {
         if(!article) {
             res.statusCode = 404;
             return res.send({ error: 'Not found' });
         }
-
         article.title = req.body.title;
         article.description = req.body.description;
         article.author = req.body.author;
@@ -105,11 +96,10 @@ app.put('/api/articles/:id', function (req, res){
                     res.statusCode = 500;
                     res.send({ error: 'Server error' });
                 }
-                log.error('Internal error(%d): %s',res.statusCode,err.message);
+                log.error('Internal error(%d): %s', res.statusCode, err.message);
             }
         });
     });
-
 });
 
 app.delete('/api/articles/:id', function (req, res){
@@ -125,10 +115,10 @@ app.delete('/api/articles/:id', function (req, res){
                 return res.send({ status: 'OK' });
             } else {
                 res.statusCode = 500;
-                log.error('Internal error(%d): %s',res.statusCode,err.message);
+                log.error('Internal error(%d): %s', res.statusCode, err.message);
                 return res.send({ error: 'Server error' });
             }
         });
     });
-    
+
 });
